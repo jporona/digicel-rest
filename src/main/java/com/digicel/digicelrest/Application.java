@@ -49,6 +49,12 @@ public class Application extends SpringBootServletInitializer {
 		return null;
 	}
 
+	/**
+	 * 
+	 * 
+	 * 
+	 * @throws Exception
+	 */
 	public static void setUpDatasourceJNDI() throws Exception {
 
 		ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(

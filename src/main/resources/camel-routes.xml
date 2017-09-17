@@ -23,10 +23,6 @@
     	
     	">
 
-<!-- 
-	<jee:jndi-lookup id="jmsCF" jndi-name="osgi:service/jms/jmsCF" 
-		expected-type="javax.jms.ConnectionFactory" /> 
- -->
 
 	<bean id="appProperties"
 		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
@@ -37,6 +33,14 @@
 			</list>
 		</property>
 	</bean>
+	
+	
+		<!-- processor -->
+	<bean id="parameterProcessor"
+		class="com.digicel.digicelrest.processor.ParameterProcessor">
+		<property name="props" ref="appProperties"></property>
+	</bean>
+	
 
 
 
@@ -48,29 +52,52 @@
 	<bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
 
 
-	<camelContext id="CTX-TIMER-TEST" trace="false"
+	<camelContext id="CTX-DIGICEL-REST" trace="false"
 		useMDCLogging="true" xmlns="http://camel.apache.org/schema/spring">
 
 		<propertyPlaceholder id="properties" location="ref:appProperties" />
-
-		<route streamCache="true" trace="false" id="Initial-Route-Timer-Test">
-			<!-- Ruta para test de deploy" /> -->
-			<camel:from uri="timer://DigicelTest?fixedRate=true&amp;period={{time}}" />
-			<camel:setBody>
-				<camel:constant>Testing OKA</camel:constant>
-			</camel:setBody>
-			<camel:log message="BODY: ${body}"></camel:log>
-		</route>
-
-		<camel:route id="ROUTE-CXF-QUEUE" trace="false"
+		
+		
+		
+		<camel:route id="ROUTE-CXF-REST" trace="false"
 			streamCache="true">
 			<camel:from
-				uri="cxfrs://http://{{address}}:{{port}}?resourceClasses=com.digicel.digicelrest.service.QueueService&amp;providers=#jsonProvider" />
+				uri="cxfrs://http://{{cxf.address}}:{{cxf.port}}?resourceClasses=com.digicel.digicelrest.service.EchoService
+				&amp;providers=#jsonProvider" />
+
+			<!-- POST, GET, DELETE, PUT -->
+			<log message="1 CXF route....http method ${header.CamelHttpMethod}" />
+			<!-- /getaccount -->
+			<log message="2 CXF route....path is ${header.CamelHttpPath}" />
+			<!-- EN ESTE CASO EMPTY -->
+			<log message="3 CXF route....body is ${body}" />
+			<!-- Basic cHJ1ZWJhOnBydWViYQ== -->
+			<log message="4 CXF route....Authorization is ${header.Authorization}" />
+			<log message="5 CXF route....Content-Type is ${header.Content-Type}" />
+			<log message="6 CXF route....Content-Length is ${header.Content-Length}" />			
+			<camel:process ref="parameterProcessor" />			
+
+			<camel:setBody>
+				<camel:simple>OKA</camel:simple>
+			</camel:setBody>
+			<camel:convertBodyTo type="java.lang.String"></camel:convertBodyTo>
+
+			<log message="${body}" />
+
+		</camel:route>
+		
+
+
+
+		<camel:route id="ROUTE-CXF-REST-QUEUE" trace="false"
+			streamCache="true">
+			<camel:from
+				uri="cxfrs://http://{{queue.address}}:{{queue.port}}?resourceClasses=com.digicel.digicelrest.service.QueueService&amp;providers=#jsonProvider" />
 
 			<camel:process ref="queueProcessor"></camel:process>
 			<!-- <camel:convertBodyTo type="java.lang.String"></camel:convertBodyTo> -->
 			<log message="${body}" />
-			<log message="queue -->  ${property.QUEUE}" />
+			<log message="queue ${property.QUEUE}" />
 
 			<camel:toD uri="jms:queue:${property.QUEUE}" pattern="InOnly"></camel:toD>
 
@@ -79,17 +106,26 @@
 			</camel:setBody>
 
 		</camel:route>
-		
-		
-		
+
+
+		<route id="ROUTE-TIMER-TEST" streamCache="true" trace="false">
+			<!-- Ruta para test de deploy" /> -->
+			<camel:from uri="timer://DigicelTest?fixedRate=true&amp;period={{time}}" />
+			<camel:setBody>
+				<camel:constant>Testing OKA</camel:constant>
+			</camel:setBody>
+			<camel:log message="BODY: ${body}"></camel:log>
+		</route>
+
+
+
 		<!-- PARA PRUEBA LEEMOS DE LA QUEUE "PRUEBA_QUEUE" -->
-		<camel:route id="ROUTE-QUEUE-READ" trace="false"
-			streamCache="true">
+		<camel:route id="ROUTE-QUEUE-READ-TEST" trace="false" streamCache="true">
 			<camel:from uri="jms:queue:account_queue" />
 			<camel:convertBodyTo type="java.lang.String"></camel:convertBodyTo>
-			<camel:log message="**************Message ${body}"></camel:log>						
+			<camel:log message="Message Readed  =  ${body}"></camel:log>
 		</camel:route>
-		
+
 
 
 

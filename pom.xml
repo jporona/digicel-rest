@@ -7,7 +7,7 @@
 	<artifactId>digicel-rest</artifactId>
 	<version>1.0.0</version>
 	<packaging>war</packaging>
-	<name>DIGICEL REST</name>
+	<name>DIGICEL REST SERVICE</name>
 	<url></url>
 
 	<parent>

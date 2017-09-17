@@ -8,3 +8,7 @@ Servicio 2
 
 Endpoint Rest Request-Reply. Componente que se encarga de exponer servicio rest generico. De acuerdo al requerimiento se expondra un Path el cual por medio de un parametro enviado permita definir cual es la cola en donde se registrará el mensaje. El servicio expuesto debe permitir recibir un mensaje que contendrá la información que se registrará en la cola.
 
+
+
+
+ mvn spring-boot:run

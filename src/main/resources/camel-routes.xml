@@ -33,7 +33,7 @@
 				/> -->
 			<camel:from uri="timer://DigicelTest?fixedRate=true&amp;period=30000" />
 			<camel:setBody>
-				<camel:constant>OKA</camel:constant>
+				<camel:constant>OKA1</camel:constant>
 			</camel:setBody>	
 			<camel:log message="BODY: ${body}"></camel:log>
 		</route>

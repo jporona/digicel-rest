@@ -1,7 +1,11 @@
 package com.digicel.digicelrest;
+
+import javax.jms.ConnectionFactory;
+import javax.naming.Context;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.camel.RoutesBuilder;
 import org.apache.camel.spring.SpringCamelContext;
-import org.apache.catalina.core.ApplicationContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -10,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.mock.jndi.SimpleNamingContextBuilder;
 
 @Configuration
 @ComponentScan
@@ -24,26 +28,41 @@ public class Application extends SpringBootServletInitializer {
 		return application.sources(Application.class);
 	}
 
-	public static void main(String[] args) {		
+	public static void main(String[] args) throws Exception {
+		setUpDatasourceJNDI();
 		SpringApplication.run(Application.class, args);
 	}
 
 	@Bean
 	public SpringCamelContext camelContext(
-			org.springframework.context.ApplicationContext ctx) throws Exception {
+			org.springframework.context.ApplicationContext ctx)
+			throws Exception {
 		SpringCamelContext camelCtx = new SpringCamelContext(ctx);
-		//camelCtx.addRoutes(routerBuilder());
-		
-		
-		
+
 		return camelCtx;
 
 	}
 
 	@Bean
 	public RoutesBuilder routerBuilder() {
-		//return new SimpleRoute();
+		// return new SimpleRoute();
 		return null;
+	}
+
+	public static void setUpDatasourceJNDI() throws Exception {
+
+		ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(
+				"vm://localhost?broker.persistent=false");
+
+		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
+				"org.apache.naming.java.javaURLContextFactory");
+		System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");
+		SimpleNamingContextBuilder builder = new SimpleNamingContextBuilder();
+		//
+		builder.bind("osgi:service/jms/jmsCF", connectionFactory);
+		//
+		builder.activate();
+
 	}
 
 }

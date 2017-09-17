@@ -24,15 +24,16 @@
     	">
 
 <!-- 
-	<context:property-placeholder location="classpath:application.properties"/>
+	<jee:jndi-lookup id="jmsCF" jndi-name="osgi:service/jms/jmsCF" 
+		expected-type="javax.jms.ConnectionFactory" /> 
  -->
- 
- 
+
 	<bean id="appProperties"
 		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="locations">
 			<list>
 				<value>classpath:application.properties</value>
+				<value>classpath:queue.properties</value>
 			</list>
 		</property>
 	</bean>
@@ -71,11 +72,24 @@
 			<log message="${body}" />
 			<log message="queue -->  ${property.QUEUE}" />
 
+			<camel:toD uri="jms:queue:${property.QUEUE}" pattern="InOnly"></camel:toD>
+
 			<camel:setBody>
-				<camel:constant>OK</camel:constant>
+				<camel:simple>${property.QUEUE}</camel:simple>
 			</camel:setBody>
-			
+
 		</camel:route>
+		
+		
+		
+		<!-- PARA PRUEBA LEEMOS DE LA QUEUE "PRUEBA_QUEUE" -->
+		<camel:route id="ROUTE-QUEUE-READ" trace="false"
+			streamCache="true">
+			<camel:from uri="jms:queue:account_queue" />
+			<camel:convertBodyTo type="java.lang.String"></camel:convertBodyTo>
+			<camel:log message="**************Message ${body}"></camel:log>						
+		</camel:route>
+		
 
 
 

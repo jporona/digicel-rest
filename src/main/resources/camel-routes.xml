@@ -4,8 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cxf="http://camel.apache.org/schema/cxf"
 	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:ctx="http://www.springframework.org/schema/context"
 	xmlns:osgi="http://www.springframework.org/schema/osgi" xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
-	xmlns:camel="http://camel.apache.org/schema/spring"
-
+	xmlns:camel="http://camel.apache.org/schema/spring" xmlns:context="http://www.springframework.org/schema/context"
 
 	xsi:schemaLocation="	 	
 		http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
@@ -18,28 +17,65 @@
     	http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
     	http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd
     	http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
-    	http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
+    	http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+    	http://www.springframework.org/schema/context 
+      http://www.springframework.org/schema/context/spring-context-4.2.xsd
+    	
+    	">
 
+<!-- 
+	<context:property-placeholder location="classpath:application.properties"/>
+ -->
+ 
+ 
+	<bean id="appProperties"
+		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="locations">
+			<list>
+				<value>classpath:application.properties</value>
+			</list>
+		</property>
+	</bean>
+
+
+
+	<bean id="queueProcessor" class="com.digicel.digicelrest.processor.QueueProcessor">
+		<property name="props" ref="appProperties"></property>
+	</bean>
+
+
+	<bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
 
 
 	<camelContext id="CTX-TIMER-TEST" trace="false"
 		useMDCLogging="true" xmlns="http://camel.apache.org/schema/spring">
 
+		<propertyPlaceholder id="properties" location="ref:appProperties" />
 
-
-		<route streamCache="true" trace="false"
-			id="Initial-Route-Timer-Test">
-			<!-- Todas las rutas deberan iniciar con este componente <from uri="quartz2://variables-xm/DispDeclaradaG?options" 
-				/> -->
+		<route streamCache="true" trace="false" id="Initial-Route-Timer-Test">
+			<!-- Ruta para test de deploy" /> -->
 			<camel:from uri="timer://DigicelTest?fixedRate=true&amp;period=30000" />
 			<camel:setBody>
-				<camel:constant>OKA1</camel:constant>
-			</camel:setBody>	
+				<camel:constant>Testing OKA</camel:constant>
+			</camel:setBody>
 			<camel:log message="BODY: ${body}"></camel:log>
 		</route>
 
+		<camel:route id="ROUTE-CXF-QUEUE" trace="false"
+			streamCache="true">
+			<camel:from
+				uri="cxfrs://http://localhost:{{port}}?resourceClasses=com.digicel.digicelrest.service.QueueService&amp;providers=#jsonProvider" />
 
+			<camel:process ref="queueProcessor"></camel:process>
+			<!-- <camel:convertBodyTo type="java.lang.String"></camel:convertBodyTo> -->
+			<log message="${body}" />
+			<log message="queue -->  ${property.QUEUE}" />
 
+			<camel:setBody>
+				<camel:constant>OK</camel:constant>
+			</camel:setBody>
+			
+		</camel:route>
 
 
 

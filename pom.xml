@@ -23,11 +23,16 @@
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<camel.version>2.15.2</camel.version>
+		
+		
+		<camel.version>2.17.0</camel.version>
+		<cxf.version>3.1.5</cxf.version>
+		
+		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<org.eclipse.jetty.version>9.2.19.v20160908</org.eclipse.jetty.version>
-		<cxf.version>3.1.5</cxf.version>
+		
 		
 		<javax.servlet.version>3.1.0</javax.servlet.version>
 
@@ -121,6 +126,14 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>${javax.servlet.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-jaxrs</artifactId>
+			<version>1.9.0</version>
+
+		</dependency>
+		
 		
 		
 			

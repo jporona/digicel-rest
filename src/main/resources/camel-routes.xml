@@ -55,7 +55,7 @@
 
 		<route streamCache="true" trace="false" id="Initial-Route-Timer-Test">
 			<!-- Ruta para test de deploy" /> -->
-			<camel:from uri="timer://DigicelTest?fixedRate=true&amp;period=30000" />
+			<camel:from uri="timer://DigicelTest?fixedRate=true&amp;period={{time}}" />
 			<camel:setBody>
 				<camel:constant>Testing OKA</camel:constant>
 			</camel:setBody>
@@ -65,7 +65,7 @@
 		<camel:route id="ROUTE-CXF-QUEUE" trace="false"
 			streamCache="true">
 			<camel:from
-				uri="cxfrs://http://localhost:{{port}}?resourceClasses=com.digicel.digicelrest.service.QueueService&amp;providers=#jsonProvider" />
+				uri="cxfrs://http://{{address}}:{{port}}?resourceClasses=com.digicel.digicelrest.service.QueueService&amp;providers=#jsonProvider" />
 
 			<camel:process ref="queueProcessor"></camel:process>
 			<!-- <camel:convertBodyTo type="java.lang.String"></camel:convertBodyTo> -->

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cxf="http://camel.apache.org/schema/cxf"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:ctx="http://www.springframework.org/schema/context"
+	xmlns:osgi="http://www.springframework.org/schema/osgi" xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+	xmlns:camel="http://camel.apache.org/schema/spring"
+
+
+	xsi:schemaLocation="	 	
+		http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd 
+		http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+		http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+    	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+    	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd 
+    	http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
+    	http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd
+    	http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
+    	http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
+
+
+
+	<camelContext id="CTX-TIMER-TEST" trace="false"
+		useMDCLogging="true" xmlns="http://camel.apache.org/schema/spring">
+
+
+
+		<route streamCache="true" trace="false"
+			id="Initial-Route-Timer-Test">
+			<!-- Todas las rutas deberan iniciar con este componente <from uri="quartz2://variables-xm/DispDeclaradaG?options" 
+				/> -->
+			<camel:from uri="timer://DigicelTest?fixedRate=true&amp;period=30000" />
+			<camel:setBody>
+				<camel:constant>OKA</camel:constant>
+			</camel:setBody>	
+			<camel:log message="BODY: ${body}"></camel:log>
+		</route>
+
+
+
+
+
+
+
+	</camelContext>
+</beans>

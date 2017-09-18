@@ -40,12 +40,14 @@
 		class="com.digicel.digicelrest.processor.ParameterProcessor">
 		<property name="props" ref="appProperties"></property>
 	</bean>
-	
-
 
 
 	<bean id="queueProcessor" class="com.digicel.digicelrest.processor.QueueProcessor">
 		<property name="props" ref="appProperties"></property>
+	</bean>
+	
+	
+	<bean id="testProcessor" class="com.digicel.digicelrest.processor.TestProcessor">
 	</bean>
 
 
@@ -75,12 +77,27 @@
 			<log message="4 CXF route....Authorization is ${header.Authorization}" />
 			<log message="5 CXF route....Content-Type is ${header.Content-Type}" />
 			<log message="6 CXF route....Content-Length is ${header.Content-Length}" />			
-			<camel:process ref="parameterProcessor" />			
+			<camel:process ref="parameterProcessor" />
+			
+			
+			<camel:toD
+				uri="cxfrs://${property.PATH}&amp;outInterceptors=#customOutInterceptors">
+				<camel:description>Invocacion al web service interno</camel:description>
+			</camel:toD>
 
-			<camel:setBody>
-				<camel:simple>OKA</camel:simple>
-			</camel:setBody>
+			<camel:process ref="testProcessor" />
+
+			<log message="----- ${headers}" />
+
+
+			<log message="2.5 CXF route....Content-Type is ${header.Content-Type}" />
+			<log message="2.6 CXF route....Content-Length is ${header.Content-Length}" />
+
+
+
 			<camel:convertBodyTo type="java.lang.String"></camel:convertBodyTo>
+
+			
 
 			<log message="${body}" />
 

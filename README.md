@@ -19,4 +19,4 @@ curl -H "Content-Type: application/json" -X POST -d '{ "parameters":{"accountId"
 
 
 
-curl -H "Content-Type: application/json" -X POST -d '{ "parameters":{"accountId":"1","addressId":"1"  }}' http://localhost:20000/getaccount
+curl -H "Content-Type: application/json" -X POST -d '{ "parameters":{"accountId":"1","addressId":"1"  }}' http://localhost:20002/getaccount
